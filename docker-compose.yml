@@ -10,15 +10,16 @@ services:
     volumes:
       - ./www:/usr/share/nginx/html
       - ./shared/php.ini:/usr/local/etc/php/php.ini
-      # - ./shared/wp-config.php:/usr/share/nginx/html/wp-config.php
+      - ./shared/wp-config.php:/usr/share/nginx/html/wp-config.php
     restart: on-failure
 
   database:
     image: mysql/mysql-server:5.7.18
     volumes:
       - ./mysql:/var/lib/mysql
-      # - ./shared/dump.sql:/docker-entrypoint-initdb.d/a_dump.sql
-      # - ./shared/cleanup.sql:/docker-entrypoint-initdb.d/c_cleanup.sql
+      - ./shared/fixup.sh:/docker-entrypoint-initdb.d/a_fixup.sh
+      - ./shared/dump.sql:/docker-entrypoint-initdb.d/b_dump.sql
+      - ./shared/cleanup.sql:/docker-entrypoint-initdb.d/c_cleanup.sql
     environment:
     - MYSQL_DATABASE=carawonga
     - MYSQL_ROOT_HOST=%
