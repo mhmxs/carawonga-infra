@@ -9,6 +9,7 @@ services:
       - "database:db"
     volumes:
       - ./www:/var/www/html
+      - ./shared/nginx.conf:/etc/nginx/nginx.conf
       - ./shared/nginx-site.conf:/etc/nginx/sites-enabled/default.conf
       - ./shared/php.ini:/usr/local/etc/php/php.ini
       - ./shared/wp-config.php:/var/www/html/wp-config.php

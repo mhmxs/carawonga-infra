@@ -1,7 +1,7 @@
 PWD=$(shell pwd)
 IP=192.168.64.4
 
-all: clean restart
+all: restart
 
 start: prepare
 	docker-compose -f docker-compose-tmp.yml up
@@ -26,4 +26,13 @@ sync:
 	rsync -az --delete --progress --exclude .gitignore carawonga:/var/www/html/ www/
 
 open:
-	open http://192.168.64.4:9000
+	open http://$(IP):9000
+
+admin:
+	open http://$(IP):9000/wp-admin/admin.php
+
+myadmin:
+	open http://$(IP):9001
+
+mysqltuner:
+	docker run --rm --network="container:carawongainfra_database_1" --link="carawongainfra_database_1:db" --network="carawongainfra_default" -it katta/mysqltuner --host db --user root --forcemem 32000
