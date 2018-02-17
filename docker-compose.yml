@@ -30,7 +30,7 @@ services:
     volumes:
       # - ./mysql:/var/lib/mysql
       - ./shared/dump.sql:/docker-entrypoint-initdb.d/a_dump.sql
-      - ./shared/cleanup.sql:/docker-entrypoint-initdb.d/b_cleanup.sql
+      - ./shared/override.sql:/docker-entrypoint-initdb.d/b_override.sql
     environment:
     - MYSQL_DATABASE=carawonga
     - MYSQL_ROOT_HOST=%

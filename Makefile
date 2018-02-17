@@ -21,7 +21,9 @@ prepare:
 post-install:
 	docker exec -t carawongainfra_cli_1 wp --allow-root search-replace https://carawonga.com http://$(IP):9000
 	docker exec -t carawongainfra_cli_1 wp --allow-root plugin deactivate analytics-tracker cache-enabler cdn-enabler http-https-remover wordfence
-	docker exec -t carawongainfra_cli_1 wp --allow-root plugin deactivate analytics-tracker cache-enabler cdn-enabler http-https-remover wordfence
 
 sync:
 	rsync -az --delete --progress --exclude .gitignore carawonga:/var/www/html/ www/
+
+open:
+	open http://192.168.64.4:9000
