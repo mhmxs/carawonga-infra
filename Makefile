@@ -1,6 +1,7 @@
 PWD=$(shell pwd)
+IP=192.168.64.4
 
-all: restart
+all: clean restart
 
 start: prepare
 	docker-compose -f docker-compose-tmp.yml up
@@ -8,17 +9,19 @@ start: prepare
 stop:
 	docker-compose -f docker-compose-tmp.yml down
 
-restart: stop clean start
+restart: stop start
 
 clean:
 	rm -rf mysql/*
 
 prepare:
-	#sed "s/carawonga.com/192.168.99.100:9000/g" shared/dump.sql > shared/dump-tmp.sql
-	#sed -i "s|https://192|http://192|g" shared/dump-tmp.sql
 	sed 's|- \./|- $(PWD)/|' docker-compose.yml > docker-compose-tmp.yml
-	sed -i 's/NEW_HOST=localhost/NEW_HOST=192.168.99.100/' docker-compose-tmp.yml
-	# sed -i 's/dump.sql/dump-tmp.sql/' docker-compose-tmp.yml
+	sed -i 's/NEW_HOST=localhost/NEW_HOST=$(IP)/' docker-compose-tmp.yml
 
-# $(shell sed -i '1 s/^.*\$/USE carawonga;/' shared/dump-tmp.sql)
-# -- INSERT INTO `wp_wf
+post-install:
+	docker exec -t carawongainfra_cli_1 wp --allow-root search-replace https://carawonga.com http://$(IP):9000
+	docker exec -t carawongainfra_cli_1 wp --allow-root plugin deactivate analytics-tracker cache-enabler cdn-enabler http-https-remover wordfence
+	docker exec -t carawongainfra_cli_1 wp --allow-root plugin deactivate analytics-tracker cache-enabler cdn-enabler http-https-remover wordfence
+
+sync:
+	rsync -az --delete --progress --exclude .gitignore carawonga:/var/www/html/ www/

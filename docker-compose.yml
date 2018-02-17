@@ -9,11 +9,12 @@ services:
       - "database:db"
     volumes:
       - ./www:/var/www/html
+      - ./shared/nginx-site.conf:/etc/nginx/sites-enabled/default.conf
       - ./shared/php.ini:/usr/local/etc/php/php.ini
       - ./shared/wp-config.php:/var/www/html/wp-config.php
     environment:
       - PUID=1000
-    restart: on-failure
+      - ERRORS=1
 
   myadmin:
     image: phpmyadmin/phpmyadmin:4.7.7-1
@@ -23,7 +24,6 @@ services:
       - "database:db"
     environment:
       - MYSQL_ROOT_PASSWORD
-    restart: on-failure
 
   database:
     image: mysql/mysql-server:5.7.18
@@ -36,7 +36,6 @@ services:
     - MYSQL_ROOT_HOST=%
     - MYSQL_ALLOW_EMPTY_PASSWORD=true
     - NEW_HOST=localhost
-    restart: on-failure
 
   cli:
     image: pierreprinetti/wp-cli
@@ -46,6 +45,4 @@ services:
       - ./www:/wordpress
       - ./shared/wp-config.php:/wordpress/wp-config.php
     entrypoint: sleep 86400
-    restart: on-failure
-    # wp --allow-root search-replace https://carawonga.com http://192.168.99.100:9000 --dry-run
     

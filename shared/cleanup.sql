@@ -1,1 +1,1 @@
-UPDATE carawonga.wp_options SET option_value = '' WHERE option_name = 'active_plugins';
+-- UPDATE carawonga.wp_options SET option_value = '' WHERE option_name = 'active_plugins';
