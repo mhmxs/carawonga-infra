@@ -3,6 +3,7 @@ version: '2'
 services:
   web:
     image: richarvey/nginx-php-fpm:1.4.1
+    dns: 8.8.8.8
     ports:
       - "9000:80"
     links:
@@ -19,6 +20,7 @@ services:
 
   myadmin:
     image: phpmyadmin/phpmyadmin:4.7.7-1
+    dns: 8.8.8.8
     ports:
       - "9001:80"
     links:
@@ -28,6 +30,7 @@ services:
 
   database:
     image: mysql/mysql-server:5.7.18
+    dns: 8.8.8.8
     volumes:
       # - ./mysql:/var/lib/mysql
       - ./shared/dump.sql:/docker-entrypoint-initdb.d/a_dump.sql
@@ -40,6 +43,7 @@ services:
 
   cli:
     image: pierreprinetti/wp-cli
+    dns: 8.8.8.8
     links:
       - "database:db"
     volumes:

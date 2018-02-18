@@ -1,5 +1,6 @@
 PWD=$(shell pwd)
-IP=192.168.64.4
+
+IP=127.0.0.1
 
 all: restart
 
@@ -19,11 +20,11 @@ prepare:
 	sed -i 's/NEW_HOST=localhost/NEW_HOST=$(IP)/' docker-compose-tmp.yml
 
 post-install:
-	docker exec -t carawongainfra_cli_1 wp --allow-root search-replace https://carawonga.com http://$(IP):9000
-	docker exec -t carawongainfra_cli_1 wp --allow-root plugin deactivate analytics-tracker cache-enabler cdn-enabler http-https-remover wordfence
+	docker-compose exec cli wp --allow-root search-replace https://carawonga.com http://$(IP):9000
+	docker-compose exec cli wp --allow-root plugin deactivate analytics-tracker cache-enabler cdn-enabler http-https-remover wordfence
 
 sync:
-	rsync -az --delete --progress --exclude .gitignore carawonga:/var/www/html/ www/
+	rsync -az --delete --progress --exclude .gitignore --exclude wp-content/cache/cache-enabler carawonga:/var/www/html/ www/
 
 open:
 	open http://$(IP):9000
@@ -35,4 +36,4 @@ myadmin:
 	open http://$(IP):9001
 
 mysqltuner:
-	docker run --rm --network="container:carawongainfra_database_1" --link="carawongainfra_database_1:db" --network="carawongainfra_default" -it katta/mysqltuner --host db --user root --forcemem 32000
+	docker run --rm --network="container:vagrant_database_1" --link="vagrant_database_1:db" -it katta/mysqltuner --host db --user root --forcemem 32000
