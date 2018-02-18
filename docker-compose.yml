@@ -32,7 +32,7 @@ services:
     image: mysql/mysql-server:5.7.18
     dns: 8.8.8.8
     volumes:
-      # - ./mysql:/var/lib/mysql
+      - database:/var/lib/mysql/
       - ./shared/dump.sql:/docker-entrypoint-initdb.d/a_dump.sql
       - ./shared/override.sql:/docker-entrypoint-initdb.d/b_override.sql
     environment:
@@ -50,4 +50,6 @@ services:
       - ./www:/wordpress
       - ./shared/wp-config.php:/wordpress/wp-config.php
     entrypoint: sleep 86400
-    
+
+volumes:
+  database:

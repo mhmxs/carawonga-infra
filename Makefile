@@ -1,13 +1,13 @@
 PWD=$(shell pwd)
 
-IP=127.0.0.1
+IP=192.168.99.100
 
 all: restart
 
 start: prepare
 	docker-compose -f docker-compose-tmp.yml up
 
-stop:
+stop: prepare
 	docker-compose -f docker-compose-tmp.yml down
 
 restart: stop start
