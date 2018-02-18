@@ -34,6 +34,3 @@ admin:
 
 myadmin:
 	open http://$(IP):9001
-
-mysqltuner:
-	docker run --rm --network="container:vagrant_database_1" --link="vagrant_database_1:db" -it katta/mysqltuner --host db --user root --forcemem 32000
