@@ -10,10 +10,7 @@ start: prepare
 stop: prepare
 	docker-compose -f docker-compose-tmp.yml down
 
-restart: stop start
-
-clean:
-	rm -rf mysql/*
+restart: stop start 
 
 prepare:
 	sed 's|- \./|- $(PWD)/|' docker-compose.yml > docker-compose-tmp.yml
