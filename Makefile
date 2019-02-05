@@ -4,15 +4,15 @@ IP=192.168.99.100
 
 all: restart
 
-start: prepare
+start: _prepare
 	docker-compose -f docker-compose-tmp.yml up
 
-stop: prepare
+stop: _prepare
 	docker-compose -f docker-compose-tmp.yml down
 
 restart: stop start 
 
-prepare:
+_prepare:
 	sed 's|- \./|- $(PWD)/|' docker-compose.yml > docker-compose-tmp.yml
 	sed -i 's/NEW_HOST=localhost/NEW_HOST=$(IP)/' docker-compose-tmp.yml
 
