@@ -1,6 +1,6 @@
 PWD=$(shell pwd)
 
-IP=192.168.99.100
+IP=localhost
 
 all: restart
 
@@ -10,7 +10,7 @@ start: _prepare
 stop: _prepare
 	docker-compose -f docker-compose-tmp.yml down
 
-restart: stop start 
+restart: stop start
 
 _prepare:
 	sed 's|- \./|- $(PWD)/|' docker-compose.yml > docker-compose-tmp.yml

@@ -49,7 +49,7 @@ services:
     volumes:
       - ./www:/var/www/html/
       - ./shared/wp-config.php:/var/www/html/wp-config.php
-    entrypoint: sleep 86400
+    entrypoint: tail -f /dev/null
 
 volumes:
   database:
