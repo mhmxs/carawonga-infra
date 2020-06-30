@@ -42,13 +42,13 @@ services:
     - NEW_HOST=localhost
 
   cli:
-    image: pierreprinetti/wp-cli
+    image: michaloo/wp-cli
     dns: 8.8.8.8
     links:
       - "database:db"
     volumes:
-      - ./www:/wordpress
-      - ./shared/wp-config.php:/wordpress/wp-config.php
+      - ./www:/var/www/html/
+      - ./shared/wp-config.php:/var/www/html/wp-config.php
     entrypoint: sleep 86400
 
 volumes:

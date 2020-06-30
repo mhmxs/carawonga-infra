@@ -21,7 +21,7 @@ post-install:
 	docker-compose exec cli wp --allow-root plugin deactivate analytics-tracker cache-enabler cdn-enabler http-https-remover wordfence
 
 sync:
-	rsync -az --delete --progress --exclude .gitignore --exclude wp-content/cache/cache-enabler carawonga:/var/www/html/ www/
+	rsync -az --delete --progress --exclude ShortpixelBackups --exclude .gitignore --exclude wp-content/uploads/cache --exclude wp-content/cache/cache-enabler carawonga:/var/www/html/ www/
 
 open:
 	open http://$(IP):9000
