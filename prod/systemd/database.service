@@ -1,0 +1,20 @@
+[Unit]
+Description=Carawonga database
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=carawonga
+TimeoutStartSec=0
+ExecStartPre=-/bin/podman kill database
+ExecStartPre=-/bin/podman rm database
+ExecStartPre=-/bin/podman volume create database
+ExecStartPre=-/bin/podman run --rm -v database:/var/lib alpine sh -c 'mkdir -p /var/lib/mysql ; chown -R 1001:1001 /var/lib/mysql'
+ExecStart=/bin/podman run --name database \
+  -v database:/var/lib/mysql \
+  -e MYSQL_RANDOM_ROOT_PASSWORD=true \
+  -u 1001:1001 \
+  mysql/mysql-server:5.7.18 
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=Carawonga backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=carawonga
+TimeoutStartSec=0
+ExecStartPre=-/bin/podman kill backend
+ExecStartPre=-/bin/podman rm backend
+ExecStartPre=-/bin/podman volume create backend
+ExecStart=/bin/podman run --name database \
+  -v /etc/nginx/conf.d:/etc/nginx/conf.d \
+  -e PUID=1001 \
+  -u 1001:1001 \
+  richarvey/nginx-php-fpm:1.10.4
+
+[Install]
+WantedBy=multi-user.target
