@@ -1,13 +1,13 @@
 [Unit]
 Description=Carawonga database
+After=database-migration
 After=network-online.target
 Wants=network-online.target
-ConditionPathExists=/home/carawonga/.mysql.ok
+ConditionPathExists=/home/carawonga/.migration.ok
 
 [Service]
+EnvironmentFile=/etc/mysql.auth
 User=carawonga
-TimeoutStartSec=0
-EnvironmentFile=/home/carawonga/.mysql.auth
 ExecStartPre=-/bin/podman kill database 2>/dev/null
 ExecStartPre=-/bin/podman rm database 2>/dev/null
 ExecStart=/bin/podman run --name database \

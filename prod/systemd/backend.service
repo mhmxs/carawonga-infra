@@ -1,17 +1,17 @@
 [Unit]
 Description=Carawonga backend
+After=backend-migration
 After=network-online.target
-After=database.service
 Wants=network-online.target
-Wants=database.service
+ConditionPathExists=/home/carawonga/.backend.ok
 
 [Service]
 User=carawonga
-TimeoutStartSec=5
 ExecStartPre=-/bin/podman kill backend 2>/dev/null
 ExecStartPre=-/bin/podman rm backend 2>/dev/null
 ExecStart=/bin/podman run --name backend \
   -v /etc/nginx/conf.d:/etc/nginx/conf.d \
+  -v backend:/var/www \
   -l database \
   -e PUID=1001 \
   -p 8080:80 \
