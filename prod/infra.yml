@@ -14,7 +14,21 @@ storage:
     - path: /etc/hostname
       overwrite: true
       contents:
-        inline: carawonga.infra
+        inline: $HOSTNAME
+    - path: /tmp/dump.auth
+      overwrite: true
+      contents:
+        inline: |
+          AUTH_USER=${AUTH_USER}
+          AUTH_PWD=${AUTH_PWD}
+          NGROK_HOST=${NGROK_HOST}
+    - path: /home/carawonga/.mysql.auth
+      overwrite: true
+      contents:
+        inline: |
+          MYSQL_USER=${MYSQL_USER}
+          MYSQL_PWD=${MYSQL_PWD}
+          MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 $(for f in `find files -type f`; do cat <<EOF
     - path: ${f##*files}
       overwrite: true

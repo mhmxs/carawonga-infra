@@ -1,3 +1,5 @@
+.DS_Store
 docker-compose-tmp.yml
 infra-tmp.yml
 infra.ign
+env

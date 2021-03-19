@@ -2,19 +2,20 @@
 Description=Carawonga database
 After=network-online.target
 Wants=network-online.target
+ConditionPathExists=/home/carawonga/.mysql.ok
 
 [Service]
 User=carawonga
 TimeoutStartSec=0
-ExecStartPre=-/bin/podman kill database
-ExecStartPre=-/bin/podman rm database
-ExecStartPre=-/bin/podman volume create database
-ExecStartPre=-/bin/podman run --rm -v database:/var/lib alpine sh -c 'mkdir -p /var/lib/mysql ; chown -R 1001:1001 /var/lib/mysql'
+EnvironmentFile=/home/carawonga/.mysql.auth
+ExecStartPre=-/bin/podman kill database 2>/dev/null
+ExecStartPre=-/bin/podman rm database 2>/dev/null
 ExecStart=/bin/podman run --name database \
   -v database:/var/lib/mysql \
-  -e MYSQL_RANDOM_ROOT_PASSWORD=true \
-  -u 1001:1001 \
-  mysql/mysql-server:5.7.18 
+  -e MYSQL_USER=${MYSQL_USER} \
+  -e MYSQL_PASSWORD=${MYSQL_PWD} \
+  -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
+  mysql/mysql-server:5.7.18
 
 [Install]
 WantedBy=multi-user.target
