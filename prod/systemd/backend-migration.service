@@ -2,17 +2,19 @@
 Description=Carawonga backend migration
 After=network-online.target
 Wants=network-online.target
-ConditionFirstBoot=yes
-SuccessAction=reboot-immediate
+ConditionPathExists=!/home/carawonga/.backend.ok
+# SuccessAction=reboot-immediate
 
 [Service]
 Type=oneshot
+Restart=on-failure
+RestartSec=5
 EnvironmentFile=/etc/dump.auth
 User=carawonga
-ExecStartPre=/bin/podman volume create backend
-ExecStart=/bin/podman run --rm -v backend:/backend -t alpine wget -O /backend/www.tar https://${AUTH_USER}:${AUTH_PWD}@${NGROK_HOST}/www.tar
-ExecStart=/bin/podman run --rm -v backend:/backend -t alpine tar -C /backend -xvf /backend/www.tar
-ExecStart=/bin/podman run --rm -v backend:/backend -t alpine chown -R 1001:1001 /backend
+ExecStartPre=-/bin/podman volume create backend 2>/dev/null
+ExecStart=/bin/podman run --rm -v backend:/backend -t alpine wget -cO /backend/www.tar https://${AUTH_USER}:${AUTH_PWD}@${NGROK_HOST}/www.tar
+ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine tar -C /backend -xvf /backend/www.tar
+ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine chown -R 1001:1001 /backend
 ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine rm /backend/www.tar
 ExecStartPost=/usr/bin/touch /home/carawonga/.backend.ok
 

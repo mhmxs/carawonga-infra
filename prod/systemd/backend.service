@@ -6,6 +6,7 @@ Wants=network-online.target
 ConditionPathExists=/home/carawonga/.backend.ok
 
 [Service]
+Restart=always
 User=carawonga
 ExecStartPre=-/bin/podman kill backend 2>/dev/null
 ExecStartPre=-/bin/podman rm backend 2>/dev/null

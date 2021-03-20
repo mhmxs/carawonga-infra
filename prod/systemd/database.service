@@ -6,6 +6,7 @@ Wants=network-online.target
 ConditionPathExists=/home/carawonga/.migration.ok
 
 [Service]
+Restart=always
 EnvironmentFile=/etc/mysql.auth
 User=carawonga
 ExecStartPre=-/bin/podman kill database 2>/dev/null

@@ -2,16 +2,18 @@
 Description=Carawonga database migration
 After=network-online.target
 Wants=network-online.target
-ConditionFirstBoot=yes
+ConditionPathExists=!/home/carawonga/.migration.ok
 
 [Service]
 Type=oneshot
+Restart=on-failure
 EnvironmentFile=/etc/dump.auth
 EnvironmentFile=/etc/mysql.auth
 User=carawonga
-ExecStartPre=/bin/podman volume create dbdump
+ExecStartPre=-/bin/podman volume create dbdump 2>/dev/null
+ExecStartPre=-/bin/podman volume rm -f database 2>/dev/null
 ExecStartPre=/bin/podman volume create database
-ExecStartPre=/bin/podman run --rm -v dbdump:/dbdump -t alpine wget -O /dbdump/database.sql https://${AUTH_USER}:${AUTH_PWD}@${NGROK_HOST}/database.sql
+ExecStartPre=/bin/podman run --rm -v dbdump:/dbdump -t alpine wget -cO /dbdump/database.sql https://${AUTH_USER}:${AUTH_PWD}@${NGROK_HOST}/database.sql
 ExecStartPre=/bin/podman run --rm -v dbdump:/dbdump -t alpine sh -c 'echo "exit 0" > /dbdump/zzz.sh'
 ExecStart=/bin/podman run --name database \
   -v dbdump:/docker-entrypoint-initdb.d \
@@ -21,7 +23,7 @@ ExecStart=/bin/podman run --name database \
   -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
   mysql/mysql-server:5.7.18
 ExecStartPost=/usr/bin/touch /home/carawonga/.migration.ok
-ExecStartPost=/bin/podman volume rm -f dbdump
+ExecStartPost=-/bin/podman volume rm -f dbdump
 
 [Install]
 WantedBy=multi-user.target
