@@ -3,7 +3,7 @@ Description=Carawonga database
 After=database-migration
 After=network-online.target
 Wants=network-online.target
-ConditionPathExists=/home/carawonga/.migration.ok
+ConditionPathExists=/home/carawonga/.database.ok
 
 [Service]
 Restart=always

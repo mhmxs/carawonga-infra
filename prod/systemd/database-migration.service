@@ -2,7 +2,7 @@
 Description=Carawonga database migration
 After=network-online.target
 Wants=network-online.target
-ConditionPathExists=!/home/carawonga/.migration.ok
+ConditionPathExists=!/home/carawonga/.database.ok
 
 [Service]
 Type=oneshot
@@ -22,7 +22,7 @@ ExecStart=/bin/podman run --name database \
   -e MYSQL_PASSWORD=${MYSQL_PWD} \
   -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
   mysql/mysql-server:5.7.18
-ExecStartPost=/usr/bin/touch /home/carawonga/.migration.ok
+ExecStartPost=/usr/bin/touch /home/carawonga/.database.ok
 ExecStartPost=-/bin/podman volume rm -f dbdump
 
 [Install]
