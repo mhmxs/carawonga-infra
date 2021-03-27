@@ -3,20 +3,26 @@ Description=Carawonga backend migration
 After=network-online.target
 Wants=network-online.target
 ConditionPathExists=!/home/carawonga/.backend.ok
-SuccessAction=reboot-immediate
+# SuccessAction=reboot-immediate
 
 [Service]
+KillMode=none
 Type=oneshot
 Restart=on-failure
 RestartSec=5
+PIDFile=%t/container-%n.pid
 EnvironmentFile=/etc/dump.auth
 User=carawonga
+ExecStartPre=/bin/rm -f %t/container-%n.pid %t/container-%n.ctr-id
 ExecStartPre=-/bin/podman volume create backend 2>/dev/null
 ExecStart=/bin/podman run --rm -v backend:/backend -t alpine wget -cO /backend/www.tar https://${AUTH_USER}:${AUTH_PWD}@${NGROK_HOST}/www.tar
 ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine tar -C /backend -xvf /backend/www.tar
 ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine chown -R 1001:1001 /backend
 ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine rm /backend/www.tar
 ExecStartPost=/usr/bin/touch /home/carawonga/.backend.ok
+
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-%n.ctr-id -t 30
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-%n.ctr-id
 
 [Install]
 WantedBy=multi-user.target

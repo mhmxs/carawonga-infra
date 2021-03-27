@@ -5,17 +5,21 @@ Wants=network-online.target
 ConditionPathExists=!/home/carawonga/.database.ok
 
 [Service]
+KillMode=none
 Type=oneshot
 Restart=on-failure
+PIDFile=%t/container-%n.pid
 EnvironmentFile=/etc/dump.auth
 EnvironmentFile=/etc/mysql.auth
 User=carawonga
+ExecStartPre=/bin/rm -f %t/container-%n.pid %t/container-%n.ctr-id
 ExecStartPre=-/bin/podman volume create dbdump 2>/dev/null
 ExecStartPre=-/bin/podman volume rm -f database 2>/dev/null
 ExecStartPre=/bin/podman volume create database
 ExecStartPre=/bin/podman run --rm -v dbdump:/dbdump -t alpine wget -cO /dbdump/database.sql https://${AUTH_USER}:${AUTH_PWD}@${NGROK_HOST}/database.sql
 # ExecStartPre=/bin/podman run --rm -v dbdump:/dbdump -t alpine sh -c 'echo "sleep 30; exit 0" > /dbdump/zzz.sh'
-ExecStart=/bin/podman run --name database \
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-%n.pid --cidfile %t/container-%n.ctr-id --cgroups=no-conmon -d --replace \
+  --name database \
   -v dbdump:/docker-entrypoint-initdb.d \
   -v database:/var/lib/mysql \
   -e MYSQL_USER=${MYSQL_USER} \
@@ -23,6 +27,9 @@ ExecStart=/bin/podman run --name database \
   -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
   mysql/mysql-server:5.7.18
 ExecStartPost=/usr/bin/touch /home/carawonga/.database.ok
+
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-%n.ctr-id -t 30
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-%n.ctr-id
 
 [Install]
 WantedBy=multi-user.target

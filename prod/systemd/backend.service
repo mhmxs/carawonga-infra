@@ -3,14 +3,17 @@ Description=Carawonga backend
 After=backend-migration
 After=network-online.target
 Wants=network-online.target
-ConditionPathExists=/home/carawonga/.backend.ok
+# ConditionPathExists=/home/carawonga/.backend.ok
 
 [Service]
+KillMode=none
+Type=forking
 Restart=always
+PIDFile=%t/container-%n.pid
 User=carawonga
-ExecStartPre=-/bin/podman kill backend 2>/dev/null
-ExecStartPre=-/bin/podman rm backend 2>/dev/null
-ExecStart=/bin/podman run --name backend \
+ExecStartPre=/bin/rm -f %t/container-%n.pid %t/container-%n.ctr-id
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-%n.pid --cidfile %t/container-%n.ctr-id --cgroups=no-conmon -d --replace \
+  --name backend \
   -v /etc/nginx/conf.d:/etc/nginx/conf.d \
   -v backend:/var/www \
   -l database \
@@ -18,6 +21,9 @@ ExecStart=/bin/podman run --name backend \
   -p 8080:80 \
   -p 8443:443 \
   richarvey/nginx-php-fpm:1.10.4
+
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-%n.ctr-id -t 30
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-%n.ctr-id
 
 [Install]
 WantedBy=multi-user.target

@@ -6,17 +6,23 @@ Wants=network-online.target
 ConditionPathExists=/home/carawonga/.database.ok
 
 [Service]
+KillMode=none
+Type=forking
 Restart=always
+PIDFile=%t/container-%n.pid
 EnvironmentFile=/etc/mysql.auth
 User=carawonga
-ExecStartPre=-/bin/podman kill database 2>/dev/null
-ExecStartPre=-/bin/podman rm database 2>/dev/null
-ExecStart=/bin/podman run --name database \
+ExecStartPre=/bin/rm -f %t/container-%n.pid %t/container-%n.ctr-id
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-%n.pid --cidfile %t/container-%n.ctr-id --cgroups=no-conmon -d --replace \
+  --name database \
   -v database:/var/lib/mysql \
   -e MYSQL_USER=${MYSQL_USER} \
   -e MYSQL_PASSWORD=${MYSQL_PWD} \
   -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
   mysql/mysql-server:5.7.18
+
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-%n.ctr-id -t 30
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-%n.ctr-id
 
 [Install]
 WantedBy=multi-user.target
