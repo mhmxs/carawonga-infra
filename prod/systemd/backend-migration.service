@@ -3,7 +3,7 @@ Description=Carawonga backend migration
 After=network-online.target
 Wants=network-online.target
 ConditionPathExists=!/home/carawonga/.backend.ok
-# SuccessAction=reboot-immediate
+SuccessAction=reboot-immediate
 
 [Service]
 Type=oneshot
