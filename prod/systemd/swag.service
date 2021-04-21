@@ -1,9 +1,7 @@
 [Unit]
-Description=Carawonga backend
-After=backend-migration
+Description=Carawonga SWAG
 After=network-online.target
 Wants=network-online.target
-# ConditionPathExists=/home/carawonga/.backend.ok
 
 [Service]
 KillMode=none
@@ -13,14 +11,20 @@ PIDFile=%t/container-%n.pid
 User=carawonga
 ExecStartPre=/bin/rm -f %t/container-%n.pid %t/container-%n.ctr-id
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-%n.pid --cidfile %t/container-%n.ctr-id --cgroups=no-conmon -d --replace \
-  --name backend \
-  -v /etc/nginx/conf.d:/etc/nginx/conf.d \
-  -v backend:/var/www \
-  -l database \
+  --name %n \
+  --cap-add=NET_ADMIN \
+  -e TZ=America/Los_Angeles \
   -e PUID=1001 \
-  -p 8080:80 \
-  -p 8443:443 \
-  richarvey/nginx-php-fpm:1.10.4
+  -e PGID=1001 \
+  -e URL=carawonga.com \
+  -e SUBDOMAINS=www \
+  -e EXTRA_DOMAINS="www.carawonga.com,carawonga.hu,www.carawonga.hu" \
+  -e VALIDATION=dns \
+  -v /home/carawonga/nginx:/config \
+  -p 443:443 \
+  -p 80:80 \
+  -l database \
+  linuxserver/swag:version-1.14.0
 
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-%n.ctr-id -t 30
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-%n.ctr-id

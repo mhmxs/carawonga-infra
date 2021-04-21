@@ -15,14 +15,6 @@ storage:
       overwrite: true
       contents:
         inline: $HOSTNAME
-    - path: /etc/dump.auth
-      overwrite: true
-      mode: 0400
-      contents:
-        inline: |
-          AUTH_USER=${AUTH_USER}
-          AUTH_PWD=${AUTH_PWD}
-          NGROK_HOST=${NGROK_HOST}
     - path: /etc/mysql.auth
       overwrite: true
       mode: 0400

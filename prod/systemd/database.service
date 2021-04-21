@@ -1,9 +1,7 @@
 [Unit]
 Description=Carawonga database
-After=database-migration
 After=network-online.target
 Wants=network-online.target
-ConditionPathExists=/home/carawonga/.database.ok
 
 [Service]
 KillMode=none
@@ -14,13 +12,17 @@ EnvironmentFile=/etc/mysql.auth
 User=carawonga
 ExecStartPre=/bin/rm -f %t/container-%n.pid %t/container-%n.ctr-id
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-%n.pid --cidfile %t/container-%n.ctr-id --cgroups=no-conmon -d --replace \
-  --name database \
-  -v database:/var/lib/mysql \
+  --name %n \
+  -e TZ=America/Los_Angeles \
+  -e PUID=1001 \
+  -e PGID=1001 \
+  -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
   -e MYSQL_USER=${MYSQL_USER} \
   -e MYSQL_PASSWORD=${MYSQL_PWD} \
-  -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
-  mysql/mysql-server:5.7.18
-
+  -v /home/carawonga/mariadb:/config \
+  -p 3306:3306 \
+  ghcr.io/linuxserver/mariadb:alpine-version-10.5.9-r0
+  
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-%n.ctr-id -t 30
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-%n.ctr-id
 
