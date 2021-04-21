@@ -15,10 +15,10 @@ EnvironmentFile=/etc/dump.auth
 User=carawonga
 ExecStartPre=/bin/rm -f %t/container-%n.pid %t/container-%n.ctr-id
 ExecStartPre=-/bin/podman volume create backend 2>/dev/null
-ExecStart=/bin/podman run --rm -v backend:/backend -t alpine wget -cO /backend/www.tar https://${AUTH_USER}:${AUTH_PWD}@${NGROK_HOST}/www.tar
-ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine tar -C /backend -xvf /backend/www.tar
+ExecStart=/bin/podman run --rm -v backend:/backend -t alpine wget -cO /backend/www.tar.gz https://${AUTH_USER}:${AUTH_PWD}@${NGROK_HOST}/www.tar.gz
+ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine tar -C /backend -xzvf /backend/www.tar.gz
 ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine chown -R 1001:1001 /backend
-ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine rm /backend/www.tar
+ExecStartPost=/bin/podman run --rm -v backend:/backend -t alpine rm /backend/www.tar.gz
 ExecStartPost=/usr/bin/touch /home/carawonga/.backend.ok
 
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-%n.ctr-id -t 30

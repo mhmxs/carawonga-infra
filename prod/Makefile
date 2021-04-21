@@ -6,7 +6,7 @@ SSH_HOST?=carawonga.com
 
 _sync-www:
 	rsync -az --delete --progress --exclude ShortpixelBackups --exclude .gitignore --exclude wp-content/uploads/cache --exclude wp-content/cache/cache-enabler $(SSH_USER)@$(SSH_HOST):/var/www/ tmp/www/
-	(cd tmp/www ; rm -rf ../www.tar ; tar -cvf ../www.tar *)
+	(cd tmp/www ; rm -rf ../www.tar.gz ; tar -czvf ../www.tar.gz *)
 
 _sync-db:
 ifndef MYSQL_USER
@@ -17,7 +17,7 @@ ifndef MYSQL_PWD
 endif
 	ssh $(SSH_USER)@$(SSH_HOST) mysqldump -u$(MYSQL_USER) -p$(MYSQL_PWD) --all-databases > tmp/database.sql
 
-sync: _sync-www _sync-db
+sync: _sync-db _sync-www
 
 serv:
 ifndef AUTH_TOKEN
