@@ -88,12 +88,12 @@ spec:
     app: mariadb
   sessionAffinity: None
   type: ClusterIP
----
-apiVersion: v1
-data:
-  MYSQL_ROOT_PASSWORD: PAQSSWORD_HERE
-kind: Secret
-metadata:
-  name: mysql-pass
-  namespace: default
-type: Opaque
+# ---
+# apiVersion: v1
+# data:
+#   MYSQL_ROOT_PASSWORD: PAQSSWORD_HERE
+# kind: Secret
+# metadata:
+#   name: mysql-pass
+#   namespace: default
+# type: Opaque
