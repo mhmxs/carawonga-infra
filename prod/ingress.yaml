@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/preserve-host: "true"
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.ingress.kubernetes.io/redirect-regex: ^https://www.(.*)
+    traefik.ingress.kubernetes.io/redirect-replacement: https://$1
+  name: wordpress
+  namespace: default
+spec:
+  rules:
+  - host: carawonga.hu
+    http:
+      paths:
+      - backend:
+          service:
+            name: wordpress
+            port:
+              number: 80
+        pathType: ImplementationSpecific
+  - host: www.carawonga.hu
+    http:
+      paths:
+      - backend:
+          service:
+            name: wordpress
+            port:
+              number: 80
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - carawonga.hu
+    - www.carawonga.hu
+    secretName: carawonga-hu-tls
+status:
+  loadBalancer:
+    ingress:
+    - ip: 212.2.244.105

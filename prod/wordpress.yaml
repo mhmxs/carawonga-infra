@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: wordpress
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: wordpress
+    spec:
+      containers:
+      - image: wordpress:5.6.2
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: web
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: wordpress
+        ports:
+        - containerPort: 80
+          name: web
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: web
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: data
+          subPath: html
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - |-
+          if [ ! -e /var/www/html/civo-init.sh ]; then WP_CONFIG_FILE=/var/www/html/wp-config-sample.php;
+          echo "LINES=\$(cat $WP_CONFIG_FILE | wc -l)" >> /var/www/html/civo-init.sh; echo "let LINES=\$LINES-2" >> /var/www/html/civo-init.sh; echo "head -\${LINES} wp-config-sample.php > /tmp/head_temp.txt" >> /var/www/html/civo-init.sh; echo "tail -3 wp-config-sample.php > /tmp/tail_temp.txt" >> /var/www/html/civo-init.sh; echo "echo 'if (isset(\$_SERVER[\"HTTP_X_FORWARDED_PROTO\"]) && \$_SERVER[\"HTTP_X_FORWARDED_PROTO\"] === \"https\") {' >> /tmp/head_temp.txt" >> /var/www/html/civo-init.sh; echo "echo '    \$_SERVER[\"HTTPS\"] = \"on\";' >> /tmp/head_temp.txt" >> /var/www/html/civo-init.sh; echo "echo '}' >> /tmp/head_temp.txt" >> /var/www/html/civo-init.sh; echo "cat /tmp/head_temp.txt > $WP_CONFIG_FILE" >> /var/www/html/civo-init.sh; echo "cat /tmp/tail_temp.txt >> $WP_CONFIG_FILE" >> /var/www/html/civo-init.sh; echo "rm -f /tmp/head_temp.txt /tmp/tail_temp.txt" >> /var/www/html/civo-init.sh;
+          chmod +x /var/www/html/civo-init.sh; fi;
+        command:
+        - sh
+        - -c
+        image: busybox
+        imagePullPolicy: Always
+        name: prepare-ssl-config
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: data
+          subPath: html
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: wordpress-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pv-claim
+  namespace: default
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+  namespace: default
+spec:
+  clusterIP: 10.43.3.63
+  clusterIPs:
+  - 10.43.3.63
+  ports:
+  - name: http-80
+    port: 80
+    protocol: TCP
+    targetPort: web
+  selector:
+    app: wordpress
+  sessionAffinity: None
+  type: ClusterIP

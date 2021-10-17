@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: carawonga-com
+  name: carawonga-com
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: carawonga-com
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: carawonga-com
+    spec:
+      containers:
+      - env:
+        - name: dest
+          value: https://carawonga.hu
+        - name: keep_uri
+          value: "true"
+        image: cryptkiddie2/redirector
+        imagePullPolicy: Always
+        name: redirector
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: carawonga-com
+  name: carawonga-com
+  namespace: default
+spec:
+  clusterIP: 10.43.72.137
+  clusterIPs:
+  - 10.43.72.137
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: carawonga-com
+  sessionAffinity: None
+  type: ClusterIP

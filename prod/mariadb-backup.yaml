@@ -1,0 +1,33 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: mariadb-backup
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: nixery.dev/shell/mariadb-client/openssh
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - mysqldump -hmariadb -uroot -p$MYSQL_ROOT_PASSWORD wphu1028354 > wphu1028354.sql && scp wphu1028354.sql carawonga@mhmxs.duckdns.org:/home/carawonga -p2022
+            env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_ROOT_PASSWORD
+                  name: mysql-pass
+            volumeMounts:
+              - mountPath: ".ssh"
+                name: readynas
+                readOnly: true
+          restartPolicy: OnFailure
+          volumes:
+            - name: readynas
+              secret:
+                secretName: readynas
