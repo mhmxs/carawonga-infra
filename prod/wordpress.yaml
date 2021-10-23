@@ -56,6 +56,20 @@ spec:
         - mountPath: /var/www/html
           name: data
           subPath: html
+      - image: nixery.dev/shell/rsync/openssh
+        command:
+        - bash
+        - -c
+        - echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd && cp .ssh/id_rsa . && chmod 400 id_rsa && rsync -az -e "ssh -p 2022 -i id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --delete --exclude ShortpixelBackups --exclude .gitignore --exclude wp-content/uploads/cache --exclude wp-content/cache/cache-enabler /var/www/html carawonga@mhmxs.duckdns.org:/home/carawonga/backup/ && sleep 1d
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: data
+          subPath: html
+        - mountPath: ".ssh"
+          name: readynas
+          readOnly: true
       dnsPolicy: ClusterFirst
       initContainers:
       - args:
@@ -84,6 +98,10 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: wordpress-pv-claim
+      - name: readynas
+        secret:
+          secretName: readynas
+          defaultMode: 0400
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -103,9 +121,6 @@ metadata:
   name: wordpress
   namespace: default
 spec:
-  clusterIP: 10.43.3.63
-  clusterIPs:
-  - 10.43.3.63
   ports:
   - name: http-80
     port: 80
@@ -115,3 +130,47 @@ spec:
     app: wordpress
   sessionAffinity: None
   type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/preserve-host: "true"
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.ingress.kubernetes.io/redirect-regex: ^https://www.(.*)
+    traefik.ingress.kubernetes.io/redirect-replacement: https://$1
+  name: wordpress
+  namespace: default
+spec:
+  rules:
+  - host: carawonga.hu
+    http:
+      paths:
+      - backend:
+          service:
+            name: wordpress
+            port:
+              number: 80
+        pathType: ImplementationSpecific
+  - host: www.carawonga.hu
+    http:
+      paths:
+      - backend:
+          service:
+            name: wordpress
+            port:
+              number: 80
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - carawonga.hu
+    - www.carawonga.hu
+    secretName: carawonga-hu-tls
+# status:
+#   loadBalancer:
+#     ingress:
+#     - ip: 212.2.244.105

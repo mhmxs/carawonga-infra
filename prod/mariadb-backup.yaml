@@ -15,7 +15,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd && mysqldump -hmariadb -uroot -p$MYSQL_ROOT_PASSWORD wphu1028354 > wphu1028354.sql && cp .ssh/id_rsa . && chmod 400 id_rsa && scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i id_rsa -P2022 wphu1028354.sql carawonga@mhmxs.duckdns.org:/home/carawonga/backup/wphu1028354_$(date +"%s").sql
+            - echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd && cp .ssh/id_rsa . && chmod 400 id_rsa && mysqldump -hmariadb -uroot -p$MYSQL_ROOT_PASSWORD wphu1028354 > wphu1028354.sql && scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i id_rsa -P2022 wphu1028354.sql carawonga@mhmxs.duckdns.org:/home/carawonga/backup/wphu1028354_$(date +"%s").sql
             env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
@@ -32,12 +32,3 @@ spec:
               secret:
                 secretName: readynas
                 defaultMode: 0400
-# ---
-# apiVersion: v1
-# data:
-#   id_rsa: PRIVKEY_HERE
-# kind: Secret
-# metadata:
-#   name: readynas
-#   namespace: default
-# type: Opaque
