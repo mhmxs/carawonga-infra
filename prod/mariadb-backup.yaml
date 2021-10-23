@@ -15,7 +15,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd && cp .ssh/id_rsa . && chmod 400 id_rsa && mysqldump -hmariadb -uroot -p$MYSQL_ROOT_PASSWORD wphu1028354 > wphu1028354.sql && scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i id_rsa -P2022 wphu1028354.sql carawonga@mhmxs.duckdns.org:/home/carawonga/backup/wphu1028354_$(date +"%s").sql
+            - echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd && cp .ssh/id_rsa . && chmod 400 id_rsa && mysqldump -hmariadb -uroot -p$MYSQL_ROOT_PASSWORD wphu1028354 > wphu1028354.sql && scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i id_rsa -P2022 wphu1028354.sql carawonga@mhmxs.duckdns.org:/home/carawonga/backup/wphu1028354_$(date +"%s").sql && ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i id_rsa -p2022 carawonga@mhmxs.duckdns.org touch /home/carawonga/backup/dump.ok
             env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:

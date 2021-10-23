@@ -17,7 +17,6 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: wordpress
     spec:
@@ -56,11 +55,11 @@ spec:
         - mountPath: /var/www/html
           name: data
           subPath: html
-      - image: nixery.dev/shell/rsync/openssh
+      - image: nixery.dev/shell/rsync/openssh/vim
         command:
         - bash
         - -c
-        - echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd && cp .ssh/id_rsa . && chmod 400 id_rsa && rsync -az -e "ssh -p 2022 -i id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --delete --exclude ShortpixelBackups --exclude .gitignore --exclude wp-content/uploads/cache --exclude wp-content/cache/cache-enabler /var/www/html carawonga@mhmxs.duckdns.org:/home/carawonga/backup/ && sleep 1d
+        - sleep 1d && echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd && cp .ssh/id_rsa . && chmod 400 id_rsa && rsync -az -e "ssh -p 2022 -i id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --delete --exclude ShortpixelBackups --exclude .gitignore --exclude wp-content/uploads/cache --exclude wp-content/cache/cache-enabler /var/www/html carawonga@mhmxs.duckdns.org:/home/carawonga/backup/ && ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i id_rsa -p2022 carawonga@mhmxs.duckdns.org touch /home/carawonga/backup/sync.ok
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
@@ -170,7 +169,3 @@ spec:
     - carawonga.hu
     - www.carawonga.hu
     secretName: carawonga-hu-tls
-# status:
-#   loadBalancer:
-#     ingress:
-#     - ip: 212.2.244.105
