@@ -2,7 +2,7 @@
 additionalArguments:
   - --entrypoints.websecure.http.tls.certresolver=letsencrypt
   - --entrypoints.websecure.http.tls.domains[0].main=carawonga.hu
-  - --entrypoints.websecure.http.tls.domains[0].sans=*.carawonga.hu
+  - --entrypoints.websecure.http.tls.domains[0].sans=www.carawonga.hu
   - --certificatesresolvers.letsencrypt.acme.email=carawonga@gmail.com
   - --certificatesresolvers.letsencrypt.acme.storage=/data/acme.json
   - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
