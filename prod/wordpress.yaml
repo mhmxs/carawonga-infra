@@ -145,7 +145,7 @@ metadata:
   name: wordpress-http
 spec:
   entryPoints:
-    - http
+    - web
   routes:
   - match: Host(`carawonga.hu`) || Host(`www.carawonga.hu`)
     kind: Rule
@@ -161,7 +161,7 @@ metadata:
   name: wordpress-https
 spec:
   entryPoints:
-    - https
+    - websecure
   routes:
   - match: Host(`carawonga.hu`) || Host(`www.carawonga.hu`)
     kind: Rule
