@@ -3,7 +3,7 @@ additionalArguments:
   - --entrypoints.websecure.http.tls.certresolver=carawongahu
   - --entrypoints.websecure.http.tls.domains[0].main=carawonga.hu
   - --entrypoints.websecure.http.tls.domains[0].sans=*.carawonga.hu
-  - --certificatesresolvers.myresolver.acme.email=carawonga@gmail.com
+  - --certificatesresolvers.carawongahu.acme.email=carawonga@gmail.com
   - --certificatesresolvers.carawongahu.acme.storage=/certs/acme.json
   - --certificatesresolvers.carawongahu.acme.httpchallenge.entrypoint=web
 
