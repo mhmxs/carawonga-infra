@@ -1,0 +1,15 @@
+---
+additionalArguments:
+  - --entrypoints.websecure.http.tls.certresolver=carawongahu
+  - --entrypoints.websecure.http.tls.domains[0].main=carawonga.hu
+  - --entrypoints.websecure.http.tls.domains[0].sans=*.carawonga.hu
+  - --certificatesresolvers.carawongahu.acme.httpchallenge.entrypoint=web
+  - --certificatesresolvers.carawongahu.acme.storage=/certs/acme.json
+
+ports:
+  web:
+    redirectTo: websecure
+
+ingressRoute:
+  dashboard:
+    enabled: false
