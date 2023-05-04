@@ -19,4 +19,4 @@ certificatesResolvers:
       email: carawonga@gmail.com
       storage: acme.json
       httpChallenge:
-        entryPoint: websecure
+        entryPoint: web
