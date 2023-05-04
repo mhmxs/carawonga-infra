@@ -130,42 +130,48 @@ spec:
   sessionAffinity: None
   type: ClusterIP
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
 metadata:
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
-    traefik.ingress.kubernetes.io/preserve-host: "true"
-    traefik.ingress.kubernetes.io/redirect-entry-point: https
-    traefik.ingress.kubernetes.io/redirect-permanent: "true"
-    traefik.ingress.kubernetes.io/redirect-regex: ^https://www.(.*)
-    traefik.ingress.kubernetes.io/redirect-replacement: https://$1
-  name: wordpress
-  namespace: default
+  name: https-redirect
 spec:
-  rules:
-  - host: carawonga.hu
-    http:
-      paths:
-      - backend:
-          service:
-            name: wordpress
-            port:
-              number: 80
-        pathType: ImplementationSpecific
-  - host: www.carawonga.hu
-    http:
-      paths:
-      - backend:
-          service:
-            name: wordpress
-            port:
-              number: 80
-        pathType: ImplementationSpecific
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wordpress-http
+spec:
+  entryPoints:
+    - http
+  routes:
+  - match: Host(`carawonga.hu`) || Host(`www.carawonga.hu`)
+    kind: Rule
+    services:
+    - name: wordpress
+      port: 80
+    middlewares:
+      - name: https-redirect
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wordpress-https
+spec:
+  entryPoints:
+    - https
+  routes:
+  - match: Host(`carawonga.hu`) || Host(`www.carawonga.hu`)
+    kind: Rule
+    services:
+    - name: wordpress
+      port: 80
   tls:
-  - hosts:
-    - carawonga.hu
-    - www.carawonga.hu
     secretName: carawonga-hu-tls
+    certResolver: carawonga-hu
+    domains:
+    - main: carawonga.hu
+      sans:
+      - www.carawonga.hu
