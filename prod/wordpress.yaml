@@ -170,7 +170,7 @@ spec:
       port: 80
   tls:
     secretName: carawonga-hu-tls
-    certResolver: myresolver
+    certResolver: letsencrypt
     domains:
     - main: carawonga.hu
       sans:
