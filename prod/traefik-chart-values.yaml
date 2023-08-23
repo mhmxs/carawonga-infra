@@ -1,5 +1,9 @@
 ---
 additionalArguments:
+  - --providers.kubernetescrd
+  - --providers.kubernetesingress
+  - --entrypoints.websecure.http.tls=true
+  - --entrypoints.websecure.http.tls.certresolver=letsencrypt
   - --entrypoints.websecure.http.tls.certresolver=letsencrypt
   - --entrypoints.websecure.http.tls.domains[0].main=carawonga.hu
   - --entrypoints.websecure.http.tls.domains[0].sans=www.carawonga.hu
@@ -16,9 +20,6 @@ deployment:
       - mountPath: /data
         name: data
 
-ports:
-  web:
-    redirectTo: websecure
 
 ingressRoute:
   dashboard:
