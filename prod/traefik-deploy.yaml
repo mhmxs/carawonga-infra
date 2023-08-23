@@ -40,20 +40,20 @@ spec:
     spec:
       containers:
       - args:
-        - --global.checknewversion
-        - --global.sendanonymoususage
+        #- --global.checknewversion
+        #- --global.sendanonymoususage
         - --entrypoints.metrics.address=:9100/tcp
         - --entrypoints.traefik.address=:9000/tcp
         - --entrypoints.web.address=:8000/tcp
         - --entrypoints.websecure.address=:8443/tcp
-        - --api.dashboard=true
+        - --api.dashboard=false
         - --ping=true
         - --metrics.prometheus=true
         - --metrics.prometheus.entrypoint=metrics
         - --providers.kubernetescrd
         - --providers.kubernetesingress
-        - --entrypoints.web.http.redirections.entryPoint.to=:443
-        - --entrypoints.web.http.redirections.entryPoint.scheme=https
+        #- --entrypoints.web.http.redirections.entryPoint.to=:443
+        #- --entrypoints.web.http.redirections.entryPoint.scheme=https
         - --entrypoints.websecure.http.tls=true
         - --entrypoints.websecure.http.tls.certresolver=letsencrypt
         - --entrypoints.websecure.http.tls.domains[0].main=carawonga.hu
@@ -224,7 +224,7 @@ spec:
     - name: wordpress
       port: 80
   tls:
-    certResolver: letsencrypt-prod
+    certResolver: letsencrypt
     domains:
     - main: carawonga.hu
       sans:
