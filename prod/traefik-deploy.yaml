@@ -242,13 +242,13 @@ spec:
   routes:
   - kind: Rule
     priority: 1
-    match: Host(`carawonga.hu`) && PathPrefix(`/acme-challenge/`)
+    match: Host(`carawonga.hu`) && PathPrefix(`/.well-known/`)
     services:
     - name: cm-acme-http-solver-5jntl
       port: 8089
   - kind: Rule
     priority: 1
-    match: Host(`www.carawonga.hu`) && PathPrefix(`/acme-challenge/`)
+    match: Host(`www.carawonga.hu`) && PathPrefix(`/.well-known/`)
     services:
     - name: cm-acme-http-solver-jlsk6
       port: 8089
