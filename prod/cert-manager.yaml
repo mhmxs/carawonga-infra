@@ -1,8 +1,8 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  generation: 1
   name: letsencrypt-prod
+  namespace: default
 spec:
   acme:
     email: carawonga@gmail.com
