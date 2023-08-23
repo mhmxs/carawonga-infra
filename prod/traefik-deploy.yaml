@@ -209,3 +209,51 @@ subjects:
   name: traefik
   namespace: kube-system
 ---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wordpress-https
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`carawonga.hu`) || Host(`www.carawonga.hu`)
+    services:
+    - name: wordpress
+      port: 80
+  tls:
+    certResolver: letsencrypt
+    domains:
+    - main: carawonga.hu
+      sans:
+      - www.carawonga.hu
+    secretName: carawonga-hu-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wordpress-http
+  namespace: default
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: Host(`carawonga.hu`) || Host(`www.carawonga.hu`)
+    middlewares:
+    - name: https-redirect
+    services:
+    - name: wordpress
+      port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+  namespace: default
+spec:
+  redirectScheme:
+    permanent: true
+    scheme: https
