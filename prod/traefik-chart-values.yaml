@@ -1,9 +1,14 @@
 ---
+ports:
+  web:
+    port: 80
+  websecure:
+    port: 443
+    
 additionalArguments:
   - --providers.kubernetescrd
   - --providers.kubernetesingress
   - --entrypoints.websecure.http.tls=true
-  - --entrypoints.websecure.http.tls.certresolver=letsencrypt
   - --entrypoints.websecure.http.tls.certresolver=letsencrypt
   - --entrypoints.websecure.http.tls.domains[0].main=carawonga.hu
   - --entrypoints.websecure.http.tls.domains[0].sans=www.carawonga.hu
@@ -20,7 +25,15 @@ deployment:
       - mountPath: /data
         name: data
 
-
 ingressRoute:
   dashboard:
     enabled: false
+
+#securityContext:
+#  capabilities:
+#    drop: [ALL]
+#    add: [NET_BIND_SERVICE]
+#  readOnlyRootFilesystem: true
+#  runAsGroup: 0
+#  runAsNonRoot: false
+#  runAsUser: 0
