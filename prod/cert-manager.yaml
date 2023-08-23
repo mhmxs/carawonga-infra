@@ -1,19 +1,23 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: letsencrypt-prod
+  name: letsencrypt
   namespace: default
 spec:
   acme:
     email: carawonga@gmail.com
     preferredChain: ""
     privateKeySecretRef:
-      name: letsencrypt-prod
+      name: letsencrypt
     server: https://acme-v02.api.letsencrypt.org/directory
     solvers:
     - http01:
         ingress:
           class: traefik
+          ingressTemplate:
+            metadata:
+              annotations:
+                traefik.ingress.kubernetes.io/frontend-entry-points: web
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -26,5 +30,5 @@ spec:
   - carawonga.hu
   - www.carawonga.hu
   issuerRef:
-    name: letsencrypt-prod
+    name: letsencrypt
   secretName: carawonga-hu-tls
