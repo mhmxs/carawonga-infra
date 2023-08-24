@@ -6,25 +6,9 @@ ports:
     port: 443
     
 additionalArguments:
-  - --api.insecure
   - --providers.kubernetescrd
   - --providers.kubernetesingress
   - --entrypoints.websecure.http.tls=true
-  - --entrypoints.websecure.http.tls.certresolver=letsencrypt
-  - --entrypoints.websecure.http.tls.domains[0].main=carawonga.hu
-  - --entrypoints.websecure.http.tls.domains[0].sans=www.carawonga.hu
-  - --certificatesresolvers.letsencrypt.acme.email=carawonga@gmail.com
-  - --certificatesresolvers.letsencrypt.acme.storage=/data/acme.json
-  - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
-
-deployment:
-  initContainers:
-    - name: volume-permissions
-      image: busybox:latest
-      command: ["sh", "-c", "touch /data/acme.json; chmod -v 600 /data/acme.json"]
-      volumeMounts:
-      - mountPath: /data
-        name: data
 
 ingressRoute:
   dashboard:
