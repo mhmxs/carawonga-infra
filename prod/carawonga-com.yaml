@@ -40,3 +40,27 @@ spec:
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: carawonga-com
+  name: carawonga-com
+  namespace: default
+spec:
+  clusterIP: 10.43.64.221
+  clusterIPs:
+  - 10.43.64.221
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: carawonga-com
+  sessionAffinity: None
+  type: ClusterIP
