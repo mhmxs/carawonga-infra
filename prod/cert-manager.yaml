@@ -14,6 +14,7 @@ spec:
     - http01:
         ingress:
           class: traefik
+          serviceType: ClusterIP
           ingressTemplate:
             metadata:
               annotations:
