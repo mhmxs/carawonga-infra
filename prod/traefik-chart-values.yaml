@@ -6,6 +6,7 @@ ports:
     port: 443
     
 additionalArguments:
+  - --api.insecure
   - --providers.kubernetescrd
   - --providers.kubernetesingress
   - --entrypoints.websecure.http.tls=true
