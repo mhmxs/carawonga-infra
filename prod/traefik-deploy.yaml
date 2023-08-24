@@ -13,7 +13,6 @@ spec:
     - name: wordpress
       port: 80
   tls:
-    certResolver: letsencrypt
     domains:
     - main: carawonga.hu
       sans:
